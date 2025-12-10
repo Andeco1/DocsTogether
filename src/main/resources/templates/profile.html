@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мой профиль</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-5">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Кабинет</h1>
+            <a href="/logout" class="btn btn-outline-danger">Выйти</a>
+        </div>
+
+        <!-- Карточка информации -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Привет, <span id="current-username">Загрузка...</span></h5>
+                <p class="text-muted">ID: <span id="current-id">...</span></p>
+            </div>
+        </div>
+
+        <!-- Форма обновления -->
+        <div class="card mb-4">
+            <div class="card-header">Сменить данные</div>
+            <div class="card-body">
+                <div id="update-msg" class="alert d-none"></div>
+                <form id="updateForm">
+                    <div class="mb-3">
+                        <label>Новый логин (необязательно)</label>
+                        <input type="text" id="newUsername" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>Новый пароль (необязательно)</label>
+                        <input type="password" id="newPassword" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>Текущий пароль (для подтверждения)</label>
+                        <input type="password" id="oldPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Обновить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Удаление -->
+        <div class="card border-danger">
+            <div class="card-body text-danger">
+                <h5>Опасная зона</h5>
+                <button onclick="deleteAccount()" class="btn btn-danger">Удалить аккаунт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. При загрузке получаем данные пользователя (READ)
+    async function loadProfile() {
+        const res = await fetch('/auth');
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById('current-username').innerText = data.username;
+            document.getElementById('current-id').innerText = data.id;
+        }
+    }
+    loadProfile();
+
+    // 2. Обновление (UPDATE)
+    document.getElementById('updateForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = {
+            oldPassword: document.getElementById('oldPassword').value,
+            newPassword: document.getElementById('newPassword').value,
+            newUsername: document.getElementById('newUsername').value
+        };
+
+        const res = await fetch('/auth', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+
+        const msgDiv = document.getElementById('update-msg');
+        msgDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+
+        if (res.ok) {
+            msgDiv.innerText = "Успешно обновлено! Перезайдите, если сменили логин.";
+            msgDiv.classList.add('alert-success');
+            loadProfile();
+        } else {
+            msgDiv.innerText = "Ошибка обновления. Проверьте старый пароль.";
+            msgDiv.classList.add('alert-danger');
+        }
+    });
+
+    // 3. Удаление (DELETE)
+    async function deleteAccount() {
+        if(!confirm("Точно удалить?")) return;
+
+        const res = await fetch('/auth', { method: 'DELETE' });
+        if (res.ok) {
+            window.location.href = '/register';
+        } else {
+            alert("Ошибка удаления");
+        }
+    }
+</script>
+</body>
+</html>
