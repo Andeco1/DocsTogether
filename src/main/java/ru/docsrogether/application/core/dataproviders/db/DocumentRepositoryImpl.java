@@ -36,6 +36,20 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
+    public List<Document> findByOwnerId(Long ownerId) {
+        return jpaRepository.findByOwnerId(ownerId).stream()
+                .map(mapper::toDomainEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Document> searchByOwnerOrMember(Long userId, String query) {
+        return jpaRepository.searchAccessible(userId, query).stream()
+                .map(mapper::toDomainEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(String id) {
         jpaRepository.deleteById(id);
     }

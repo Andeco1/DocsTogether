@@ -22,4 +22,7 @@ public class DocumentJpaEntity {
     private String content;
 
     private LocalDateTime lastModified;
+
+    @Column(nullable = false)
+    private Long ownerId;
 }

@@ -9,5 +9,7 @@ public interface DocumentRepository {
     Document save(Document document);
     Optional<Document> findById(String id);
     List<Document> findAll();
+    List<Document> findByOwnerId(Long ownerId);
+    List<Document> searchByOwnerOrMember(Long userId, String query);
     void deleteById(String id);
 }

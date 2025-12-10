@@ -7,4 +7,5 @@ public interface ManageUserUseCase {
     User update(String username, String oldPassword, String newPassword, String newUsername);
     void delete(String username);
     User getByUsername(String username);
+    User getById(Long id);
 }

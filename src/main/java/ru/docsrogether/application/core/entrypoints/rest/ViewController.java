@@ -2,14 +2,11 @@ package ru.docsrogether.application.core.entrypoints.rest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class ViewController {
-
-//    @GetMapping("/")
-//    public String index() {
-//        return "index";
-//    }
 
     @GetMapping("/login")
     public String loginPage() {
@@ -28,6 +25,21 @@ public class ViewController {
 
     @GetMapping("/")
     public String indexPage() {
-        return "redirect:/profile"; // На главной перенаправляем в профиль
+        return "landing";
+    }
+
+    @GetMapping("/landing")
+    public String landing() {
+        return "landing";
+    }
+
+    @GetMapping("/documents")
+    public String documentsPage() {
+        return "documents";
+    }
+
+    @GetMapping("/share/{token}")
+    public String shareLanding(@PathVariable String token, @RequestParam(value = "redirect", required = false) String redirect) {
+        return "share";
     }
 }

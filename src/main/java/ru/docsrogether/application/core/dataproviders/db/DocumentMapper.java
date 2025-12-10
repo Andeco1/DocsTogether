@@ -12,6 +12,7 @@ public class DocumentMapper {
         jpaEntity.setTitle(domainEntity.getTitle());
         jpaEntity.setContent(domainEntity.getContent());
         jpaEntity.setLastModified(domainEntity.getLastModified());
+        jpaEntity.setOwnerId(domainEntity.getOwnerId());
         return jpaEntity;
     }
 
@@ -21,6 +22,7 @@ public class DocumentMapper {
                 .title(jpaEntity.getTitle())
                 .content(jpaEntity.getContent())
                 .lastModified(jpaEntity.getLastModified())
+                .ownerId(jpaEntity.getOwnerId())
                 .build();
     }
 }

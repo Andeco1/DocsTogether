@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Доступ к документу</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100">
+<div class="position-absolute top-0 start-0 m-4">
+    <a class="brand-link" href="/">DocsTogether</a>
+</div>
+<div class="card shadow-sm p-4 invite-card">
+    <h4 class="mb-3">Приглашение к документу</h4>
+    <div id="info" class="mb-3 text-muted">Проверяем ссылку...</div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary flex-grow-1" id="joinBtn" disabled>Присоединиться</button>
+        <a class="btn btn-outline-secondary" href="/login">Войти</a>
+    </div>
+</div>
+
+<script>
+    const token = window.location.pathname.split('/').pop();
+    let targetDoc = null;
+
+    async function loadPreview() {
+        const res = await fetch(`/api/share/${token}`);
+        if (!res.ok) {
+            document.getElementById('info').innerText = 'Ссылка недействительна';
+            return;
+        }
+        const data = await res.json();
+        targetDoc = data.documentId;
+        document.getElementById('info').innerText = `Документ: "${data.documentTitle}". Вам будет выдана роль: ${data.role}.`;
+        document.getElementById('joinBtn').disabled = false;
+    }
+
+    async function join() {
+        const res = await fetch(`/api/share/${token}`, {method: 'POST'});
+        if (res.status === 401) {
+            window.location.href = `/login`;
+            return;
+        }
+        if (!res.ok) {
+            document.getElementById('info').innerText = 'Не удалось применить доступ.';
+            return;
+        }
+        window.location.href = `/documents?open=${targetDoc}`;
+    }
+
+    document.getElementById('joinBtn').addEventListener('click', join);
+    loadPreview();
+</script>
+</body>
+</html>
+

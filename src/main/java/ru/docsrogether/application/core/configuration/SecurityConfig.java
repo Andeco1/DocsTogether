@@ -3,6 +3,7 @@ package ru.docsrogether.application.core.configuration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,13 +27,14 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Для упрощения работы с fetch-запросами
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/register", "/login", "/auth/register", "/css/**", "/js/**").permitAll() // Разрешаем вход и статику
+                        .requestMatchers("/", "/landing", "/register", "/login", "/auth/register", "/css/**", "/js/**", "/share/**").permitAll() // Разрешаем вход и статику
+                        .requestMatchers(HttpMethod.GET, "/api/share/**").permitAll()
                         .anyRequest().authenticated() // Все остальное только для вошедших
                 )
                 .formLogin(form -> form
                         .loginPage("/login") // Указываем URL нашей кастомной страницы
                         .loginProcessingUrl("/perform_login") // Куда отправлять форму (POST)
-                        .defaultSuccessUrl("/profile", true) // Куда перенаправить после успеха
+                        .defaultSuccessUrl("/documents", false) // Куда перенаправить после успеха или сохраненный запрос
                         .failureUrl("/login?error=true") // Куда если ошибка
                         .permitAll()
                 )

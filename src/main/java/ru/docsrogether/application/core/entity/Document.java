@@ -12,6 +12,7 @@ public class Document {
     private String title;
     private String content;
     private LocalDateTime lastModified;
+    private Long ownerId;
 
     public void updateContent(String newContent) {
         if (newContent == null) return;
