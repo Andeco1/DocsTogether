@@ -43,7 +43,7 @@ public class ManageDocumentUseCase {
     }
 
     public List<Document> getUserDocuments(Long userId, String query) {
-        return repository.searchByOwnerOrMember(userId, query);
+        return repository.findByOwnerAndQuery(userId, query);
     }
 
     public Document getAccessibleDocument(String id, Long userId) {

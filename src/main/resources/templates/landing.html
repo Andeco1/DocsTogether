@@ -2,44 +2,106 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>DocsTogether — совместный редактор</title>
+    <title>DocsTogether — Совместная работа</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+<nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">DocsTogether</a>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-primary" href="/login">Войти</a>
-            <a class="btn btn-primary" href="/register">Создать аккаунт</a>
+        <a class="navbar-brand" href="/">DocsTogether</a>
+        <div class="d-flex gap-3">
+            <a class="btn btn-link text-decoration-none text-muted fw-medium" href="/login">Войти</a>
+            <a class="btn btn-primary px-4" href="/register">Начать</a>
         </div>
     </div>
 </nav>
-<section class="container py-5">
-    <div class="row align-items-center">
-        <div class="col-lg-6 mb-4">
-            <div class="pill mb-3">Совместное редактирование в реальном времени</div>
-            <h1 class="fw-bold mb-3">Онлайн-редактор с совместной работой</h1>
-            <p class="lead text-muted">Создавайте документы, делитесь ссылкой с правами чтения или редактирования и работайте синхронно через WebSocket.</p>
-            <div class="d-flex gap-3 mt-4">
-                <a class="btn btn-primary btn-lg" href="/register">Начать бесплатно</a>
-                <a class="btn btn-outline-primary btn-lg" href="/login">У меня уже есть аккаунт</a>
+
+<section class="container" style="padding-top: 120px; padding-bottom: 80px;">
+    <div class="row align-items-center gy-5">
+        <div class="col-lg-5">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white border border-primary-subtle text-primary mb-4 shadow-sm">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span class="small fw-bold">Real-time collaboration</span>
+            </div>
+            <h1 class="display-4 fw-bold mb-4 lh-sm">Пишите документы <span style="color: var(--primary-600)">вместе</span> и без задержек.</h1>
+            <p class="lead text-muted mb-5">
+                Простой, быстрый и красивый редактор для команд. Создавайте, делитесь ссылками и наблюдайте за правками коллег в реальном времени.
+            </p>
+            <div class="d-flex gap-3">
+                <a class="btn btn-primary btn-lg px-5" href="/register">Попробовать бесплатно</a>
+                <a class="btn btn-outline-secondary btn-lg" href="/login"><i class="bi bi-play-circle me-2"></i> Демо</a>
+            </div>
+
+            <div class="mt-5 d-flex gap-4 text-muted small">
+                <div class="d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill text-success"></i> Бесплатно</div>
+                <div class="d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill text-success"></i> Без установки</div>
+                <div class="d-flex align-items-center gap-2"><i class="bi bi-shield-lock-fill text-success"></i> Безопасно</div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="surface-card p-4">
-                <h5 class="card-title mb-3">Что внутри</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item bg-transparent">Общий список ваших документов с поиском</li>
-                    <li class="list-group-item bg-transparent">Гибкие ссылки-доступы: читатель или редактор</li>
-                    <li class="list-group-item bg-transparent">Присутствие в редакторе: видны подключенные пользователи</li>
-                    <li class="list-group-item bg-transparent">Безопасность: учетные записи и права доступа</li>
-                </ul>
+
+        <div class="col-lg-7">
+            <div class="position-relative" style="perspective: 1000px;">
+                <div class="card border-0 shadow-lg p-0 overflow-hidden" style="transform: rotateY(-5deg) rotateX(2deg);">
+                    <div class="bg-light border-bottom px-3 py-2 d-flex align-items-center gap-2">
+                        <div class="d-flex gap-1">
+                            <div class="rounded-circle bg-danger" style="width:10px;height:10px; opacity:0.5"></div>
+                            <div class="rounded-circle bg-warning" style="width:10px;height:10px; opacity:0.5"></div>
+                            <div class="rounded-circle bg-success" style="width:10px;height:10px; opacity:0.5"></div>
+                        </div>
+                        <div class="bg-white rounded px-2 py-1 text-muted small mx-auto shadow-sm" style="width: 200px; text-align: center;">docstogether.com/edit/xyz</div>
+                    </div>
+                    <div class="card-body bg-white" style="min-height: 350px;">
+                        <div class="d-flex justify-content-between mb-4 border-bottom pb-2">
+                            <h5 class="fw-bold m-0">План проекта Q3 🚀</h5>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary">Вы</span>
+                                <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning">Alex</span>
+                            </div>
+                        </div>
+                        <p class="text-muted">Введение</p>
+                        <p>Начиная с третьего квартала мы фокусируемся на...</p>
+                        <div class="p-2 bg-warning-subtle rounded border border-warning d-inline-block text-warning-emphasis small mb-2">
+                            <i class="bi bi-cursor-fill"></i> Alex печатает...
+                        </div>
+                        <p class="opacity-50">...улучшении UX и скорости работы WebSocket.</p>
+                    </div>
+                </div>
+
+                <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary rounded-5" style="z-index: -1; transform: translate(40px, 40px); opacity: 0.1;"></div>
             </div>
         </div>
     </div>
 </section>
+
+<section class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                <div class="fs-1 text-primary mb-3"><i class="bi bi-share"></i></div>
+                <h5>Мгновенный доступ</h5>
+                <p class="text-muted small">Никаких сложных приглашений. Просто скиньте ссылку, и коллега уже в документе.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                <div class="fs-1 text-primary mb-3"><i class="bi bi-people"></i></div>
+                <h5>Живое присутствие</h5>
+                <p class="text-muted small">Видите, кто сейчас онлайн и кто вносит правки. Никаких конфликтов версий.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                <div class="fs-1 text-primary mb-3"><i class="bi bi-hdd-network"></i></div>
+                <h5>Синхронизация</h5>
+                <p class="text-muted small">Используем технологию WebSocket для передачи каждого нажатия клавиши.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-4 text-center text-muted small mt-5">
+    &copy; 2025 DocsTogether.
+</footer>
 </body>
 </html>
-

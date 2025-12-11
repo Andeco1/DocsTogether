@@ -23,19 +23,19 @@ public class SecurityConfig {
     private final UserRepository userRepository;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Для упрощения работы с fetch-запросами
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/landing", "/register", "/login", "/auth/register", "/css/**", "/js/**", "/share/**").permitAll() // Разрешаем вход и статику
+                        .requestMatchers("/", "/landing", "/register", "/login", "/auth/register", "/css/**", "/js/**", "/share/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/share/**").permitAll()
-                        .anyRequest().authenticated() // Все остальное только для вошедших
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login") // Указываем URL нашей кастомной страницы
-                        .loginProcessingUrl("/perform_login") // Куда отправлять форму (POST)
-                        .defaultSuccessUrl("/documents", false) // Куда перенаправить после успеха или сохраненный запрос
-                        .failureUrl("/login?error=true") // Куда если ошибка
+                        .loginPage("/login")
+                        .loginProcessingUrl("/perform_login")
+                        .defaultSuccessUrl("/documents", false)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -52,7 +52,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Адаптер для Spring Security
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
@@ -64,7 +63,6 @@ public class SecurityConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    // Адаптер для UseCase
     @Bean
     public PasswordEncoderPort passwordEncoderPort(PasswordEncoder encoder) {
         return new PasswordEncoderPort() {

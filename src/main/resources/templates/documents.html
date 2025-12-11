@@ -4,70 +4,108 @@
     <meta charset="UTF-8">
     <title>Мои документы</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <link rel="stylesheet" href="/css/theme.css">
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/documents">DocsTogether</a>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="/profile">Профиль</a>
-            <a class="btn btn-outline-danger" href="/logout">Выйти</a>
+<body class="d-flex flex-column h-100 overflow-hidden bg-light">
+
+<nav class="navbar navbar-expand-lg px-4 flex-shrink-0 bg-white border-bottom z-3" style="height: 64px;">
+    <a class="navbar-brand brand-link" href="/documents">DocsTogether</a>
+
+    <div class="mx-auto d-none d-md-flex align-items-center gap-2 bg-light px-2 py-1 rounded-3 border" style="min-width: 400px;">
+        <i class="bi bi-search text-muted ps-2"></i>
+        <input type="text" id="search" class="form-control border-0 shadow-none bg-transparent py-1" placeholder="Поиск документов..." autocomplete="off">
+        <button class="btn btn-sm btn-white text-primary fw-medium" onclick="loadDocs()">Найти</button>
+    </div>
+
+    <div class="d-flex gap-3 align-items-center">
+        <div class="d-flex flex-column align-items-end lh-1">
+            <span class="fw-bold small" id="currentUser">Загрузка...</span>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-light rounded-circle border p-0" style="width: 38px; height: 38px;" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-person-fill text-muted"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2">
+                <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person-gear me-2"></i>Профиль</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a></li>
+            </ul>
         </div>
     </div>
 </nav>
-<div class="container py-4">
-    <div class="d-flex flex-wrap align-items-center mb-4 toolbar">
-        <div class="d-flex flex-column">
-            <div class="text-muted small">Текущий пользователь</div>
-            <div id="currentUser" class="fw-semibold">...</div>
+
+<div class="d-flex flex-grow-1 overflow-hidden">
+
+    <div class="d-flex flex-column bg-white border-end" style="width: 300px; min-width: 300px;">
+        <div class="p-3 border-bottom">
+            <button class="btn btn-primary w-100 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#newDocModal">
+                <i class="bi bi-plus-lg me-2"></i>Новый документ
+            </button>
         </div>
-        <div class="ms-auto d-flex flex-wrap gap-2">
-            <input type="text" id="search" class="form-control input-grow" placeholder="Поиск по названию">
-            <button class="btn btn-outline-primary" onclick="loadDocs()">Искать</button>
+
+        <div class="d-flex justify-content-between px-3 py-2 bg-light border-bottom">
+            <span class="text-muted small fw-bold text-uppercase">Мои файлы</span>
+            <span class="badge bg-secondary-subtle text-secondary rounded-pill" id="docCount">0</span>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-            <input type="text" id="newTitle" class="form-control input-grow" placeholder="Название нового документа">
-            <button class="btn btn-primary" onclick="createDoc()">Создать</button>
+
+        <div class="flex-grow-1 overflow-y-auto custom-scroll p-2">
+            <ul class="list-group list-group-flush gap-1" id="docList">
+            </ul>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-5 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Мои документы</span>
-                    <span class="badge bg-secondary" id="docCount">0</span>
+    <div class="flex-grow-1 d-flex flex-column bg-light position-relative">
+
+        <div id="emptyState" class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+            <div class="bg-white p-4 rounded-circle shadow-sm mb-3">
+                <i class="bi bi-file-earmark-text display-4 text-primary opacity-50"></i>
+            </div>
+            <h5 class="fw-medium">Документ не выбран</h5>
+            <p class="small mb-0">Выберите файл из списка слева или создайте новый</p>
+        </div>
+
+        <div id="editorContainer" class="d-flex flex-column h-100 d-none">
+            <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-bottom shadow-sm z-2">
+                <div class="overflow-hidden">
+                    <h5 class="mb-0 fw-bold text-truncate" id="docTitle" style="max-width: 400px;">Без названия</h5>
+                    <div class="d-flex align-items-center gap-2 mt-1 small">
+                        <span class="badge bg-light text-muted border fw-normal" id="editStatus">...</span>
+                        <span class="text-muted border-start ps-2" id="docMeta"></span>
+                    </div>
                 </div>
-                <ul class="list-group list-group-flush" id="docList"></ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <div id="presence" class="d-flex align-items-center me-2"></div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="createShare()">
+                        <i class="bi bi-share-fill me-1"></i> Поделиться
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm rounded-circle" onclick="deleteDoc()" title="Удалить">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-grow-1 overflow-y-auto p-4 d-flex justify-content-center" style="background: #f3f4f6;">
+                <textarea id="editor" class="form-control shadow-sm border-0"
+                          style="max-width: 850px; min-height: 1000px; height: auto; padding: 3rem; border-radius: 4px; resize: none; outline: none;"
+                          placeholder="Начните печатать..." disabled></textarea>
             </div>
         </div>
-        <div class="col-lg-7">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <div class="text-muted small">Открыт документ</div>
-                            <div class="fw-semibold" id="docTitle">Не выбран</div>
-                            <div class="text-muted small" id="docMeta"></div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <select id="shareRole" class="form-select form-select-sm w-auto">
-                                <option value="READER">Чтение</option>
-                                <option value="WRITER">Редактирование</option>
-                            </select>
-                            <button class="btn btn-outline-primary btn-sm" onclick="createShare()">Поделиться</button>
-                            <button class="btn btn-outline-danger btn-sm" onclick="deleteDoc()">Удалить</button>
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="text-muted small">Подключенные пользователи</div>
-                        <div id="presence" class="d-flex flex-wrap gap-2"></div>
-                    </div>
-                    <textarea id="editor" class="form-control" rows="14" placeholder="Выберите документ, чтобы начать" disabled></textarea>
-                    <div class="text-muted small mt-2" id="editStatus"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="newDocModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-body p-4">
+                <h5 class="mb-3 fw-bold">Новый документ</h5>
+                <input type="text" id="newTitle" class="form-control form-control-lg mb-3" placeholder="Название документа" autocomplete="off">
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="createDoc()" data-bs-dismiss="modal">Создать</button>
                 </div>
             </div>
         </div>
@@ -75,17 +113,22 @@
 </div>
 
 <div class="modal fade" id="shareModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Ссылка для доступа</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Доступ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-2 text-muted">Отправьте ссылку коллегам. Роль: <span id="shareRoleText"></span></div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <select id="shareRole" class="form-select">
+                        <option value="READER">Только чтение</option>
+                        <option value="WRITER">Редактирование</option>
+                    </select>
+                </div>
                 <div class="input-group">
-                    <input type="text" id="shareLink" class="form-control" readonly>
-                    <button class="btn btn-outline-primary" onclick="copyShare()">Копировать</button>
+                    <input type="text" id="shareLink" class="form-control bg-light" readonly>
+                    <button class="btn btn-outline-primary" onclick="copyShare()"><i class="bi bi-copy"></i></button>
                 </div>
             </div>
         </div>
@@ -104,10 +147,14 @@
     document.addEventListener('DOMContentLoaded', async () => {
         await loadUser();
         await loadDocs();
+
+        // Проверяем, есть ли параметр open в URL
         const params = new URLSearchParams(window.location.search);
         const openId = params.get('open');
         if (openId) {
             openDocById(openId);
+        } else {
+            // Если нет, показываем Empty State (это происходит автоматически, т.к. editorContainer скрыт)
         }
     });
 
@@ -127,9 +174,17 @@
         list.innerHTML = '';
         docs.forEach(doc => {
             const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `<div><div class="fw-semibold">${doc.title}</div><div class="text-muted small">Роль: ${doc.role}</div></div><button class="btn btn-link btn-sm">Открыть</button>`;
-            li.querySelector('button').onclick = () => openDoc(doc);
+            li.className = 'list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 cursor-pointer';
+            li.style.cursor = 'pointer';
+            li.innerHTML = `
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-text text-primary opacity-50"></i>
+                    <div class="text-truncate">
+                        <div class="fw-medium text-dark text-truncate" style="font-size: 0.95rem;">${doc.title}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">${doc.role}</div>
+                    </div>
+                </div>`;
+            li.onclick = () => openDoc(doc);
             list.appendChild(li);
         });
         document.getElementById('docCount').innerText = docs.length;
@@ -148,17 +203,33 @@
     }
 
     async function openDoc(doc) {
+        // 1. Переключаем видимость: скрываем заглушку, показываем редактор
+        document.getElementById('emptyState').classList.add('d-none');
+        document.getElementById('editorContainer').classList.remove('d-none');
+
         const res = await fetch(`/api/documents/${doc.id}`);
         if (!res.ok) return;
         const detailed = await res.json();
+
         currentDocId = detailed.id;
         currentRole = detailed.role;
+
         document.getElementById('docTitle').innerText = detailed.title;
-        document.getElementById('docMeta').innerText = `Роль: ${detailed.role} • Последнее изменение: ${detailed.lastModified ?? ''}`;
+        document.getElementById('docMeta').innerText = detailed.lastModified ? new Date(detailed.lastModified).toLocaleTimeString() : 'Сейчас';
+
         const editor = document.getElementById('editor');
         editor.value = detailed.content || '';
         editor.disabled = detailed.editable === false;
-        document.getElementById('editStatus').innerText = detailed.editable ? 'Вы можете редактировать' : 'Только просмотр';
+
+        const statusBadge = document.getElementById('editStatus');
+        if (detailed.editable) {
+            statusBadge.className = "badge bg-success-subtle text-success border border-success-subtle fw-normal";
+            statusBadge.innerText = "Редактор";
+        } else {
+            statusBadge.className = "badge bg-secondary-subtle text-secondary border border-secondary-subtle fw-normal";
+            statusBadge.innerText = "Только чтение";
+        }
+
         await loadMembers(detailed.id);
         connectWebSocket(detailed.id);
     }
@@ -177,11 +248,24 @@
         const presence = document.getElementById('presence');
         presence.innerHTML = '';
         members.forEach(m => {
-            const badge = document.createElement('span');
-            badge.className = 'presence-badge';
-            badge.innerText = `${m.username} (${m.role})`;
+            const badge = document.createElement('div');
+            badge.className = 'rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm border border-white';
+            badge.style.width = '30px';
+            badge.style.height = '30px';
+            badge.style.marginLeft = '-8px';
+            badge.style.fontSize = '10px';
+            badge.style.backgroundColor = stringToColor(m.username);
+            badge.title = m.username;
+            badge.innerText = m.username.substring(0, 2).toUpperCase();
             presence.appendChild(badge);
         });
+    }
+
+    function stringToColor(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+        return '#' + '00000'.substring(0, 6 - c.length) + c;
     }
 
     function connectWebSocket(docId) {
@@ -212,8 +296,7 @@
         });
 
         presenceSubscription = stompClient.subscribe(`/topic/document/${docId}/presence`, message => {
-            const data = JSON.parse(message.body);
-            updatePresenceBadge(data);
+            loadMembers(docId);
         });
 
         sendPresence('join');
@@ -224,20 +307,6 @@
         stompClient.send(`/app/document.presence/${currentDocId}`, {}, JSON.stringify({type}));
     }
 
-    function updatePresenceBadge(update) {
-        const presence = document.getElementById('presence');
-        const existing = presence.querySelector(`[data-user='${update.userId}']`);
-        if (update.type === 'leave') {
-            if (existing) existing.remove();
-            return;
-        }
-        const badge = existing || document.createElement('span');
-        badge.dataset.user = update.userId;
-        badge.className = 'presence-badge';
-        badge.innerText = `${update.username} (${update.role})`;
-        if (!existing) presence.appendChild(badge);
-    }
-
     document.getElementById('editor').addEventListener('input', function() {
         if (!stompClient || !stompClient.connected || !currentDocId) return;
         if (currentRole === 'READER') return;
@@ -245,14 +314,9 @@
     });
 
     async function deleteDoc() {
-        if (!currentDocId) return;
-        if (!confirm('Удалить документ?')) return;
+        if (!currentDocId || !confirm('Удалить документ?')) return;
         await fetch(`/api/documents/${currentDocId}`, {method: 'DELETE'});
-        currentDocId = null;
-        document.getElementById('editor').value = '';
-        document.getElementById('docTitle').innerText = 'Не выбран';
-        document.getElementById('docMeta').innerText = '';
-        loadDocs();
+        window.location.reload();
     }
 
     async function createShare() {
@@ -267,7 +331,6 @@
         const data = await res.json();
         const link = `${window.location.origin}/share/${data.token}`;
         document.getElementById('shareLink').value = link;
-        document.getElementById('shareRoleText').innerText = role === 'WRITER' ? 'Редактирование' : 'Чтение';
         new bootstrap.Modal(document.getElementById('shareModal')).show();
     }
 
@@ -281,4 +344,3 @@
 </script>
 </body>
 </html>
-

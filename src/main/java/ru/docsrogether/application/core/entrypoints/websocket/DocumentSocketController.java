@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import ru.docsrogether.application.core.entity.DocumentRole;
 import ru.docsrogether.application.core.entrypoints.websocket.dto.EditorChange;
 import ru.docsrogether.application.core.entrypoints.websocket.dto.PresenceUpdate;
 import ru.docsrogether.application.core.entity.DocumentMembership;
@@ -68,13 +69,13 @@ public class DocumentSocketController {
             update.setUserId(userId);
             update.setUsername(principal.getName());
             var doc = manageDocumentUseCase.getAccessibleDocument(id, userId);
-            ru.docsrogether.application.core.entity.DocumentRole role = doc.getOwnerId().equals(userId)
-                    ? ru.docsrogether.application.core.entity.DocumentRole.OWNER
+            DocumentRole role = doc.getOwnerId().equals(userId)
+                    ? DocumentRole.OWNER
                     : manageDocumentUseCase.getUserMemberships(userId).stream()
                     .filter(m -> m.getDocumentId().equals(id))
                     .map(DocumentMembership::getRole)
                     .findFirst()
-                    .orElse(ru.docsrogether.application.core.entity.DocumentRole.READER);
+                    .orElse(DocumentRole.READER);
             update.setRole(role);
             messagingTemplate.convertAndSend("/topic/document/" + id + "/presence", update);
         } catch (RuntimeException ignored) {

@@ -1,5 +1,6 @@
 package ru.docsrogether.application.core.dataproviders.db;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.docsrogether.application.core.entity.Document;
@@ -43,8 +44,8 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public List<Document> searchByOwnerOrMember(Long userId, String query) {
-        return jpaRepository.searchAccessible(userId, query).stream()
+    public List<Document> findByOwnerAndQuery(Long userId,@Nullable String query) {
+        return jpaRepository.searchAccessible(userId, query != null ? query.toLowerCase() : "").stream()
                 .map(mapper::toDomainEntity)
                 .collect(Collectors.toList());
     }

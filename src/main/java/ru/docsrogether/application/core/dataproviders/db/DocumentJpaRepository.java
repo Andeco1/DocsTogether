@@ -11,6 +11,13 @@ import java.util.List;
 public interface DocumentJpaRepository extends JpaRepository<DocumentJpaEntity, String> {
     List<DocumentJpaEntity> findByOwnerId(Long ownerId);
 
-    @Query("select d from DocumentJpaEntity d where (d.ownerId = :userId or d.id in (select m.documentId from DocumentMembershipJpaEntity m where m.userId = :userId)) and (:query is null or lower(d.title) like lower(concat('%', :query, '%')))")
+    @Query("""
+        select d from DocumentJpaEntity d
+        where (d.ownerId = :userId 
+               or d.id in (select m.documentId from DocumentMembershipJpaEntity m where m.userId = :userId))
+          and (:query is null 
+               or lower(d.title) like concat('%', :query, '%'))
+    """)
     List<DocumentJpaEntity> searchAccessible(@Param("userId") Long userId, @Param("query") String query);
+
 }

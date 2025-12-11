@@ -16,8 +16,5 @@ public interface DocumentMembershipJpaRepository extends JpaRepository<DocumentM
     Optional<DocumentMembershipJpaEntity> findByDocumentIdAndUserId(String documentId, Long userId);
     void deleteByDocumentIdAndUserId(String documentId, Long userId);
     List<DocumentMembershipJpaEntity> findByDocumentIdAndRole(String documentId, DocumentRole role);
-
-    @Query("select m.documentId from DocumentMembershipJpaEntity m where m.userId = :userId")
-    List<String> findDocumentIdsByUser(@Param("userId") Long userId);
 }
 

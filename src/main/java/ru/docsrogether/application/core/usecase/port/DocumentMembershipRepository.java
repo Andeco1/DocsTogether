@@ -13,6 +13,5 @@ public interface DocumentMembershipRepository {
     Optional<DocumentMembership> findByDocumentIdAndUserId(String documentId, Long userId);
     void deleteById(Long id);
     void deleteByDocumentIdAndUserId(String documentId, Long userId);
-    List<DocumentMembership> findByDocumentIdAndRole(String documentId, DocumentRole role);
 }
 

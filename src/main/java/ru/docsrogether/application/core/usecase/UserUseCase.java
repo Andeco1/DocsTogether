@@ -28,7 +28,6 @@ public class UserUseCase implements ManageUserUseCase {
     public User update(String currentUsername, String oldPassword, String newPassword, String newUsername) {
         User user = getByUsername(currentUsername);
 
-        // Проверяем старый пароль (если требуется подтверждение)
         if (oldPassword != null && !passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new RuntimeException("Invalid old password");
         }

@@ -47,11 +47,6 @@ public class DocumentMembershipRepositoryImpl implements DocumentMembershipRepos
         jpaRepository.deleteByDocumentIdAndUserId(documentId, userId);
     }
 
-    @Override
-    public List<DocumentMembership> findByDocumentIdAndRole(String documentId, DocumentRole role) {
-        return jpaRepository.findByDocumentIdAndRole(documentId, role).stream().map(this::toDomain).collect(Collectors.toList());
-    }
-
     private DocumentMembership toDomain(DocumentMembershipJpaEntity entity) {
         return DocumentMembership.builder()
                 .id(entity.getId())
